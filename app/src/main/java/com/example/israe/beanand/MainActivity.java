@@ -1,6 +1,7 @@
 package com.example.israe.beanand;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -11,6 +12,8 @@ import android.os.Parcelable;
 import android.security.keystore.KeyProperties;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +23,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import 	android.security.keystore.KeyGenParameterSpec;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -38,6 +44,8 @@ public class MainActivity extends AppCompatActivity  implements NfcAdapter.Creat
     private EditText editText;
     private TextView textKey;
     private TextView textciphe;
+    Button botonAbrir;
+    Button botonGuardar;
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +60,8 @@ public class MainActivity extends AppCompatActivity  implements NfcAdapter.Creat
         textciphe=(TextView) findViewById(R.id.textCip);
 */
         editText=(EditText) findViewById(R.id.idText);
+        botonAbrir=(Button)findViewById(R.id.botonAbrir);
+        botonGuardar=(Button) findViewById(R.id.botonGuardar);
         NfcAdapter nfcAdapter=NfcAdapter.getDefaultAdapter(this);//inicializador
         if(nfcAdapter==null){
             Toast.makeText(this,"No tiene NFC",Toast.LENGTH_SHORT).show();
@@ -66,6 +76,32 @@ public class MainActivity extends AppCompatActivity  implements NfcAdapter.Creat
 
         nfcAdapter.setNdefPushMessageCallback(this,this);
         //nfcAdapter.set
+        botonAbrir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String[] nombres= fileList();
+                int len = nombres.length;
+                for (int i=0;i<len;i++)
+                    System.out.println(nombres[i]);
+            }
+        });
+        botonGuardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    OutputStreamWriter archivo= new OutputStreamWriter(openFileOutput(String.valueOf(System.currentTimeMillis()), Activity.MODE_PRIVATE));
+                    archivo.write(editText.getText().toString());
+                    archivo.flush();
+                    archivo.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(v.getContext(),"guardado",Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
     @Override
     public NdefMessage createNdefMessage(NfcEvent nfcEvent) {
