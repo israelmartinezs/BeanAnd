@@ -17,7 +17,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity  implements NfcAdapter.Creat
     private TextView textciphe;
     Button botonAbrir;
     Button botonGuardar;
+
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity  implements NfcAdapter.Creat
         editText=(EditText) findViewById(R.id.idText);
         botonAbrir=(Button)findViewById(R.id.botonAbrir);
         botonGuardar=(Button) findViewById(R.id.botonGuardar);
+        final Date date = new Date();
         NfcAdapter nfcAdapter=NfcAdapter.getDefaultAdapter(this);//inicializador
         if(nfcAdapter==null){
             Toast.makeText(this,"No tiene NFC",Toast.LENGTH_SHORT).show();
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity  implements NfcAdapter.Creat
             public void onClick(View v) {
                 String[] nombres= fileList();
                 int len = nombres.length;
+                System.out.println(len);
                 for (int i=0;i<len;i++)
                     System.out.println(nombres[i]);
             }
@@ -88,8 +93,13 @@ public class MainActivity extends AppCompatActivity  implements NfcAdapter.Creat
         botonGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DateFormat hourdateFormat = new SimpleDateFormat("HH:mm:ssddMMyyyy");
+                //System.out.println("Hora y fecha: "+hourdateFormat.format(date));
+                String hora=hourdateFormat.format(date);
+
+                System.out.println("Hora y fecha: "+hora);
                 try {
-                    OutputStreamWriter archivo= new OutputStreamWriter(openFileOutput(String.valueOf(System.currentTimeMillis()), Activity.MODE_PRIVATE));
+                    OutputStreamWriter archivo= new OutputStreamWriter(openFileOutput(hora+".key", Activity.MODE_PRIVATE));
                     archivo.write(editText.getText().toString());
                     archivo.flush();
                     archivo.close();
